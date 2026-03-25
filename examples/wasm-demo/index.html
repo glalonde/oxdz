@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>oxdz — tracker player demo</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: monospace;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 24px;
+  }
+  h1 { color: #a0c4ff; margin: 0 0 8px; }
+  p.sub { color: #888; margin: 0 0 24px; font-size: 0.85em; }
+
+  .drop-zone {
+    border: 2px dashed #444;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 20px;
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: #a0c4ff;
+    background: rgba(160,196,255,0.05);
+  }
+  .drop-zone input[type=file] { display: none; }
+  .drop-zone .hint { color: #888; font-size: 0.9em; margin-top: 8px; }
+
+  .controls { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; }
+  button {
+    background: #2d2d5e;
+    color: #a0c4ff;
+    border: 1px solid #a0c4ff;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 1em;
+    transition: background 0.15s;
+  }
+  button:hover { background: #3d3d7e; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .info-box {
+    background: #0d0d1f;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .info-box.visible { display: block; }
+  .info-row { display: flex; gap: 12px; margin-bottom: 4px; }
+  .info-label { color: #666; width: 80px; flex-shrink: 0; }
+  .info-value { color: #e0e0e0; }
+
+  #progress-bar-wrap {
+    background: #0d0d1f;
+    border: 1px solid #333;
+    border-radius: 4px;
+    height: 6px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  #progress-bar-wrap.visible { display: block; }
+  #progress-bar {
+    height: 100%;
+    background: #a0c4ff;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  #status {
+    color: #888;
+    font-size: 0.85em;
+    min-height: 1.2em;
+  }
+  #status.error { color: #ff6b6b; }
+
+  .time-display {
+    color: #666;
+    font-size: 0.85em;
+  }
+</style>
+</head>
+<body>
+<h1>oxdz tracker demo</h1>
+<p class="sub">Drop a .mod / .xm / .s3m file and hit play</p>
+
+<div class="drop-zone" id="drop-zone">
+  <div>📂 Drop tracker file here or click to browse</div>
+  <div class="hint">Supports MOD · XM · S3M</div>
+  <input type="file" id="file-input" accept=".mod,.xm,.s3m,.MOD,.XM,.S3M">
+</div>
+
+<div class="info-box" id="info-box">
+  <div class="info-row"><span class="info-label">Title</span><span class="info-value" id="mod-title">—</span></div>
+  <div class="info-row"><span class="info-label">Format</span><span class="info-value" id="mod-format">—</span></div>
+  <div class="info-row"><span class="info-label">Duration</span><span class="info-value" id="mod-duration">—</span></div>
+</div>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<div class="controls">
+  <button id="play-btn" disabled>▶ Play</button>
+  <button id="stop-btn" disabled>■ Stop</button>
+  <span class="time-display" id="time-display"></span>
+</div>
+
+<div id="status">Load a file to begin.</div>
+
+<script type="module">
+import init, { module_info, render_module } from './pkg/oxdz_wasm_demo.js';
+
+await init();
+
+let audioCtx = null;
+let sourceNode = null;
+let audioBuffer = null;
+let startTime = 0;
+let rafId = null;
+let fileBytes = null;
+
+const dropZone   = document.getElementById('drop-zone');
+const fileInput  = document.getElementById('file-input');
+const playBtn    = document.getElementById('play-btn');
+const stopBtn    = document.getElementById('stop-btn');
+const statusEl   = document.getElementById('status');
+const infoBox    = document.getElementById('info-box');
+const progressWrap = document.getElementById('progress-bar-wrap');
+const progressBar  = document.getElementById('progress-bar');
+const timeDisplay  = document.getElementById('time-display');
+
+function setStatus(msg, isError = false) {
+  statusEl.textContent = msg;
+  statusEl.className = isError ? 'error' : '';
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// ── file loading ──────────────────────────────────────────────────────────────
+
+async function loadFile(file) {
+  stopPlayback();
+  audioBuffer = null;
+  playBtn.disabled = true;
+  infoBox.classList.remove('visible');
+  progressWrap.classList.remove('visible');
+  timeDisplay.textContent = '';
+  setStatus(`Loading ${file.name}…`);
+
+  fileBytes = new Uint8Array(await file.arrayBuffer());
+
+  let info;
+  try {
+    info = JSON.parse(module_info(fileBytes));
+  } catch(e) {
+    setStatus(`Error reading module: ${e}`, true);
+    return;
+  }
+
+  document.getElementById('mod-title').textContent   = info.title || '(untitled)';
+  document.getElementById('mod-format').textContent  = info.format;
+  document.getElementById('mod-duration').textContent = fmtTime(info.total_time_ms / 1000);
+  infoBox.classList.add('visible');
+
+  setStatus('Rendering audio… (this may take a moment)');
+  progressWrap.classList.add('visible');
+  progressBar.style.width = '0%';
+
+  // yield to let the browser paint before blocking in WASM
+  await new Promise(r => setTimeout(r, 50));
+
+  let samples;
+  try {
+    // render one full loop or 5 minutes max
+    samples = render_module(fileBytes, 300);
+  } catch(e) {
+    setStatus(`Render error: ${e}`, true);
+    return;
+  }
+
+  progressBar.style.width = '100%';
+
+  // samples is interleaved stereo Float32Array
+  const numFrames = samples.length / 2;
+  const sampleRate = 44100;
+
+  if (!audioCtx) audioCtx = new AudioContext({ sampleRate });
+
+  audioBuffer = audioCtx.createBuffer(2, numFrames, sampleRate);
+  const ch0 = audioBuffer.getChannelData(0);
+  const ch1 = audioBuffer.getChannelData(1);
+  for (let i = 0; i < numFrames; i++) {
+    ch0[i] = samples[i * 2];
+    ch1[i] = samples[i * 2 + 1];
+  }
+
+  const dur = fmtTime(numFrames / sampleRate);
+  setStatus(`Ready — ${dur} rendered`);
+  playBtn.disabled = false;
+}
+
+// ── playback ──────────────────────────────────────────────────────────────────
+
+function startPlayback() {
+  if (!audioBuffer) return;
+  stopPlayback();
+
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  sourceNode = audioCtx.createBufferSource();
+  sourceNode.buffer = audioBuffer;
+  sourceNode.connect(audioCtx.destination);
+  sourceNode.start();
+  startTime = audioCtx.currentTime;
+
+  playBtn.disabled = true;
+  stopBtn.disabled = false;
+
+  sourceNode.onended = () => {
+    stopPlayback();
+    playBtn.disabled = false;
+  };
+
+  function tick() {
+    if (!sourceNode) return;
+    const elapsed = audioCtx.currentTime - startTime;
+    const total = audioBuffer.duration;
+    const pct = Math.min(100, (elapsed / total) * 100);
+    progressBar.style.width = pct + '%';
+    timeDisplay.textContent = `${fmtTime(elapsed)} / ${fmtTime(total)}`;
+    rafId = requestAnimationFrame(tick);
+  }
+  rafId = requestAnimationFrame(tick);
+}
+
+function stopPlayback() {
+  if (sourceNode) {
+    sourceNode.onended = null;
+    try { sourceNode.stop(); } catch(_) {}
+    sourceNode.disconnect();
+    sourceNode = null;
+  }
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  stopBtn.disabled = true;
+  timeDisplay.textContent = '';
+  if (audioBuffer) progressBar.style.width = '0%';
+}
+
+// ── events ────────────────────────────────────────────────────────────────────
+
+playBtn.addEventListener('click', startPlayback);
+stopBtn.addEventListener('click', () => { stopPlayback(); playBtn.disabled = false; });
+
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) loadFile(e.target.files[0]);
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) loadFile(file);
+});
+</script>
+</body>
+</html>

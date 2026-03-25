@@ -1,0 +1,13 @@
+[workspace]
+
+[package]
+name = "oxdz-wasm-demo"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+oxdz = { path = "../../" }
+wasm-bindgen = "0.2"
