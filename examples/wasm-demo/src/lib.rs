@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 /// Returns a JSON string with title, format description, and total_time_ms.
 #[wasm_bindgen]
 pub fn module_info(data: &[u8]) -> Result<String, JsValue> {
-    let mut player = oxdz::Oxdz::new(data, 44100, "")
+    let player = oxdz::Oxdz::new(data, 44100, "")
         .map_err(|e| JsValue::from_str(&format!("{}", e)))?;
     let mut mi = oxdz::ModuleInfo::new();
     player.module_info(&mut mi);
