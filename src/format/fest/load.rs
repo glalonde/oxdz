@@ -1,10 +1,10 @@
 use std::cmp;
-use format::{ProbeInfo, Format, Loader};
-use format::mk::{ModData, ModPatterns, ModInstrument};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::BinaryRead;
-use ::*;
+use crate::format::{ProbeInfo, Format, Loader};
+use crate::format::mk::{ModData, ModPatterns, ModInstrument};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::BinaryRead;
+use crate::*;
 
 /// His Master's Noise module loader
 pub struct FestLoader;

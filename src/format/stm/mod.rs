@@ -4,9 +4,9 @@ pub use self::load::*;
 
 use std::any::Any;
 use std::fmt;
-use module::{event, ModuleData, Sample};
-use util::{NOTES, BinaryRead};
-use ::*;
+use crate::module::{event, ModuleData, Sample};
+use crate::util::{NOTES, BinaryRead};
+use crate::*;
 
 
 pub struct StmData {
@@ -21,7 +21,7 @@ pub struct StmData {
 }
 
 impl ModuleData for StmData {
-    fn as_any(&self) -> &Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 

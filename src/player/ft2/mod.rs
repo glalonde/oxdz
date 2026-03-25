@@ -1,8 +1,8 @@
 mod ft2play;
 
-use module::Module;
-use player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
-use ::Error;
+use crate::module::Module;
+use crate::player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
+use crate::Error;
 
 pub struct Ft2;
 
@@ -17,7 +17,7 @@ impl PlayerListEntry for Ft2 {
        }
    }
 
-   fn player(&self, module: &Module, options: Options) -> Box<FormatPlayer> {
+   fn player(&self, module: &Module, options: Options) -> Box<dyn FormatPlayer> {
        Box::new(self::ft2play::Ft2Play::new(module, options))
    }
 

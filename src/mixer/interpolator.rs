@@ -1,9 +1,10 @@
-use mixer::SMIX_SHIFT;
+use crate::mixer::SMIX_SHIFT;
 
 pub trait Interpolator: Send + Sync {
+    #[allow(dead_code)]
     fn name(&self) -> &'static str;
     fn bsize(&self) -> usize;
-    fn get_sample(&self, &[i32], i32) -> i32;
+    fn get_sample(&self, _: &[i32], _: i32) -> i32;
 }
 
 // Nearest neighbor interpolator

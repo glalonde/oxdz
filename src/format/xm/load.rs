@@ -1,9 +1,9 @@
-use format::{ProbeInfo, Format, Loader};
-use format::xm::{XmData, SongHeaderTyp, InstrHeaderTyp, SampleHeaderTyp, PatternHeaderTyp};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::{BinaryRead, SliceConvert};
-use ::*;
+use crate::format::{ProbeInfo, Format, Loader};
+use crate::format::xm::{XmData, SongHeaderTyp, InstrHeaderTyp, SampleHeaderTyp, PatternHeaderTyp};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::{BinaryRead, SliceConvert};
+use crate::*;
 
 /// FastTracker 2 module loader
 pub struct XmLoader;

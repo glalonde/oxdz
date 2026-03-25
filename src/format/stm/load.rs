@@ -1,9 +1,9 @@
-use format::{ProbeInfo, Format, Loader};
-use format::stm::{StmData, StmPatterns, StmInstrument};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::BinaryRead;
-use ::*;
+use crate::format::{ProbeInfo, Format, Loader};
+use crate::format::stm::{StmData, StmPatterns, StmInstrument};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::BinaryRead;
+use crate::*;
 
 /// Scream Tracker 2 module loader
 pub struct StmLoader;

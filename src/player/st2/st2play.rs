@@ -1,8 +1,8 @@
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::stm::StmData;
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::stm::StmData;
+use crate::mixer::Mixer;
 
 /// Scream Tracker 2 replayer
 ///
@@ -408,7 +408,7 @@ impl St2Channel {
 
 
 impl FormatPlayer for St2Play {
-    fn start(&mut self, data: &mut PlayerData, mdata: &ModuleData, mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StmData>().unwrap();
 
@@ -442,7 +442,7 @@ impl FormatPlayer for St2Play {
 
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StmData>().unwrap();
 

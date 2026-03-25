@@ -3,9 +3,9 @@ pub mod load;
 pub use self::load::*;
 
 use std::any::Any;
-use format::mk::{ModInstrument, ModPatterns};
-use module::{ModuleData, Sample};
-use ::*;
+use crate::format::mk::{ModInstrument, ModPatterns};
+use crate::module::{ModuleData, Sample};
+use crate::*;
 
 
 pub struct StData {
@@ -19,7 +19,7 @@ pub struct StData {
 }
 
 impl ModuleData for StData {
-    fn as_any(&self) -> &Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 

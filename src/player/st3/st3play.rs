@@ -1,8 +1,8 @@
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::s3m::S3mData;
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::s3m::S3mData;
+use crate::mixer::Mixer;
 
 /// S3M replayer
 ///
@@ -2098,7 +2098,7 @@ impl St3Play {
 
 
 impl FormatPlayer for St3Play {
-    fn start(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<S3mData>().unwrap();
 
@@ -2135,7 +2135,7 @@ impl FormatPlayer for St3Play {
         data.initial_tempo = data.tempo;
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<S3mData>().unwrap();
 

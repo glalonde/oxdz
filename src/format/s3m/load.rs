@@ -1,9 +1,9 @@
-use format::{ProbeInfo, Loader, Format};
-use format::s3m::{S3mData, S3mPattern, S3mInstrument};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::BinaryRead;
-use ::*;
+use crate::format::{ProbeInfo, Loader, Format};
+use crate::format::s3m::{S3mData, S3mPattern, S3mInstrument};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::BinaryRead;
+use crate::*;
 
 pub trait BinaryReadExt {
     fn read16l_lo_hi(&self, ofs: usize) -> Result<u32, Error>;

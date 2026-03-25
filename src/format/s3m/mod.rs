@@ -3,7 +3,7 @@ pub mod load;
 pub use self::load::*;
 
 use std::any::Any;
-use module::{event, ModuleData, Sample};
+use crate::module::{event, ModuleData, Sample};
 
 //                                S3M Module header
 //          0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
@@ -55,7 +55,7 @@ pub struct S3mData {
 }
 
 impl ModuleData for S3mData {
-    fn as_any(&self) -> &Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 

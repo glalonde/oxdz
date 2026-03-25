@@ -9,18 +9,18 @@ mod ft2;
 mod hmn;
 mod fasttracker;
 
-pub use mixer::Mixer;
+pub use crate::mixer::Mixer;
 
 use std::cmp;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::default::Default;
-use module::{Module, ModuleData};
-use player::scan::{ScanData, OrdData};
-use ::*;
+use crate::module::{Module, ModuleData};
+use crate::player::scan::{ScanData, OrdData};
+use crate::*;
 
 
-fn all() -> Vec<Box<PlayerListEntry>> {
+fn all() -> Vec<Box<dyn PlayerListEntry>> {
     vec![
         Box::new(protracker::Pt21a),
         Box::new(noisetracker::Nt11),
@@ -29,8 +29,6 @@ fn all() -> Vec<Box<PlayerListEntry>> {
         Box::new(st3::St3),
         Box::new(soundtracker::DocSt2),
         Box::new(ust::Ust27),
-        Box::new(st2::St2),
-        Box::new(st3::St3),
         Box::new(ft2::Ft2),
         Box::new(hmn::Hmn),
     ]
@@ -40,7 +38,7 @@ pub fn list() -> Vec<PlayerInfo> {
     all().iter().map(|p| p.info()).collect()
 }
 
-pub fn list_by_id(player_id: &str) -> Result<Box<PlayerListEntry>, Error> {
+pub fn list_by_id(player_id: &str) -> Result<Box<dyn PlayerListEntry>, Error> {
     for p in all() {
         if player_id == p.info().id {
             return Ok(p)
@@ -90,7 +88,7 @@ pub struct PlayerInfo {
 
 pub trait PlayerListEntry {
     fn info(&self) -> PlayerInfo;
-    fn player(&self, module: &Module, options: Options) -> Box<FormatPlayer>;
+    fn player(&self, module: &Module, options: Options) -> Box<dyn FormatPlayer>;
     fn import(&self, module: Module) -> Result<Module, Error>;
 }
 
@@ -100,11 +98,12 @@ pub trait PlayerListEntry {
 pub type State = Vec<u8>;
 
 pub trait FormatPlayer: Send + Sync {
-    fn start(&mut self, &mut PlayerData, &ModuleData, &mut Mixer);
-    fn play(&mut self, &mut PlayerData, &ModuleData, &mut Mixer);
+    fn start(&mut self, _: &mut PlayerData, _: &dyn ModuleData, _: &mut Mixer);
+    fn play(&mut self, _: &mut PlayerData, _: &dyn ModuleData, _: &mut Mixer);
+    #[allow(dead_code)]
     fn reset(&mut self);
     unsafe fn save_state(&self) -> State;
-    unsafe fn restore_state(&mut self, &State);
+    unsafe fn restore_state(&mut self, _: &State);
 }
 
 #[derive(Default)]
@@ -163,7 +162,7 @@ pub struct Player<'a> {
     pub data      : Box<PlayerData>,
     pub total_time: u32,
     pub module    : Module,
-    format_player : Box<FormatPlayer>,
+    format_player : Box<dyn FormatPlayer>,
     mixer         : Mixer<'a>,
     loop_count    : usize,
     end           : bool,
@@ -367,7 +366,7 @@ impl<'a> Player<'a> {
         };
 
         for i in 0..self.module.channels {
-            let mut cinfo = &mut info.channel_info[i];
+            let cinfo = &mut info.channel_info[i];
             cinfo.period = self.mixer.period(i) as u32;
             cinfo.position = self.mixer.voicepos(i) as u32;
             cinfo.sample = self.mixer.sample(i) as u8;
@@ -471,6 +470,7 @@ impl Options {
         options
     }
 
+    #[allow(dead_code)]
     pub fn has_option(&mut self, opt: &str) -> bool {
         match self.opt.entry(opt.to_string()) {
             Entry::Occupied(_) => true,
@@ -478,7 +478,7 @@ impl Options {
         }
     }
 
-    pub fn option_int(&self, opt: &str) -> Option<isize> {
+    pub fn option_int(&self, _opt: &str) -> Option<isize> {
         None
     }
 }

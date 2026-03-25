@@ -1,7 +1,7 @@
-use format::mk::{self, ModData, ModPatterns};
-use format::s3m::{S3mData, S3mInstrument, S3mPattern};
-use module::Module;
-use ::*;
+use crate::format::mk::{self, ModData, ModPatterns};
+use crate::format::s3m::{S3mData, S3mInstrument, S3mPattern};
+use crate::module::Module;
+use crate::*;
 
 static FINETUNE_TABLE: [u16; 16] = [
     8363, 8413, 8463, 8529, 8581, 8651, 8723, 8757,
@@ -107,7 +107,7 @@ fn encode_pattern(patterns: &ModPatterns, num: usize, ch: usize) -> S3mPattern {
             }
             if b != 0 {
                 b |= c as u8;     // channel
-                &data.push(b); size += 1;
+                data.push(b); size += 1;
             }
             if b & 0x20 != 0 {
                 let mut note = mk::period_to_note(e.note & 0xfff);
@@ -118,16 +118,16 @@ fn encode_pattern(patterns: &ModPatterns, num: usize, ch: usize) -> S3mPattern {
                 };
 
                 let ins = ((e.note&0xf000) >> 8) as u8 | (e.cmd&0xf0) >> 4;
-                &data.push(note); size += 1;
-                &data.push(ins); size += 1;
+                data.push(note); size += 1;
+                data.push(ins); size += 1;
             }
             if b & 0x40 != 0 {
-                &data.push(e.cmdlo); size += 1;
+                data.push(e.cmdlo); size += 1;
             }
             if b & 0x80 != 0 {
                 let (cmd, info) = convert_cmd(e.cmd&0x0f, e.cmdlo);
-                &data.push(cmd); size += 1;
-                &data.push(info); size +=1;
+                data.push(cmd); size += 1;
+                data.push(info); size +=1;
             }
         }
         data.push(0); size += 1;

@@ -1,4 +1,4 @@
-use format::mk::ModData;
+use crate::format::mk::ModData;
 
 #[derive(PartialEq, Clone, Debug)]
 pub enum TrackerID {

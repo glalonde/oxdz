@@ -1,10 +1,8 @@
-use std::ptr;
 use std::slice;
 use byteorder::{ByteOrder, BigEndian, LittleEndian};
-use Error;
-use ::*;
+use crate::Error;
 
-pub const NOTES: &'static [&'static str] = &[
+pub const NOTES: &[&str] = &[
     "C ", "C#", "D ", "D#", "E ", "F ", "F#", "G ", "G#", "A ", "A#", "B "
 ];
 
@@ -42,7 +40,6 @@ macro_rules! magic4 {
 }
 
 
-
 pub trait BinaryRead {
     fn read_string(&self, ofs: usize, size: usize) -> Result<String, Error>;
     fn read32b(&self, ofs: usize) -> Result<u32, Error>;
@@ -56,42 +53,42 @@ pub trait BinaryRead {
 
 impl<'a> BinaryRead for &'a [u8] {
     fn read_string(&self, ofs: usize, size: usize) -> Result<String, Error> {
-        try!(check_buffer_size(&self, ofs + size));
-        Ok(String::from_utf8_lossy(&self[ofs..ofs+size]).to_string().replace("\x00", " "))
+        check_buffer_size(self, ofs + size)?;
+        Ok(String::from_utf8_lossy(&self[ofs..ofs+size]).to_string().replace('\x00', " "))
     }
 
     fn read32b(&self, ofs: usize) -> Result<u32, Error> {
-        try!(check_buffer_size(&self, ofs + 4));
+        check_buffer_size(self, ofs + 4)?;
         Ok(BigEndian::read_u32(&self[ofs..ofs+4]))
     }
 
     fn read16b(&self, ofs: usize) -> Result<u16, Error> {
-        try!(check_buffer_size(&self, ofs + 2));
+        check_buffer_size(self, ofs + 2)?;
         Ok(BigEndian::read_u16(&self[ofs..ofs+2]))
     }
 
     fn read32l(&self, ofs: usize) -> Result<u32, Error> {
-        try!(check_buffer_size(&self, ofs + 4));
+        check_buffer_size(self, ofs + 4)?;
         Ok(LittleEndian::read_u32(&self[ofs..ofs+4]))
     }
 
     fn read16l(&self, ofs: usize) -> Result<u16, Error> {
-        try!(check_buffer_size(&self, ofs + 2));
+        check_buffer_size(self, ofs + 2)?;
         Ok(LittleEndian::read_u16(&self[ofs..ofs+2]))
     }
 
     fn read8(&self, ofs: usize) -> Result<u8, Error> {
-        try!(check_buffer_size(&self, ofs + 1));
+        check_buffer_size(self, ofs + 1)?;
         Ok(self[ofs])
     }
 
     fn read8i(&self, ofs: usize) -> Result<i8, Error> {
-        try!(check_buffer_size(&self, ofs + 1));
+        check_buffer_size(self, ofs + 1)?;
         Ok(self[ofs] as i8)
     }
 
     fn slice(&self, start: usize, size: usize) -> Result<&[u8], Error> {
-        try!(check_buffer_size(&self, start + size));
+        check_buffer_size(self, start + size)?;
         Ok(&self[start..start + size])
     }
 }
@@ -104,7 +101,7 @@ pub trait SliceConvert<'a> {
 impl<'a> SliceConvert<'a> for [u16] {
     fn as_slice_u8(&'a self) -> &'a [u8] {
         unsafe {
-            slice::from_raw_parts(self.as_ptr() as *const u8, self.len() as usize * 2)
+            slice::from_raw_parts(self.as_ptr() as *const u8, self.len() * 2)
         }
     }
 }
@@ -116,4 +113,3 @@ fn check_buffer_size(b: &[u8], end: usize) -> Result<(), Error> {
     }
     Ok(())
 }
-

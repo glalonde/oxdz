@@ -3,13 +3,14 @@ pub mod load;
 pub use self::load::*;
 
 use std::any::Any;
-use module::{event, ModuleData, Sample};
-use util::BinaryRead;
-use ::*;
+use crate::module::{event, ModuleData, Sample};
+use crate::util::BinaryRead;
+use crate::*;
 
 
 #[derive(Debug)]
 pub struct SongHeaderTyp {
+    #[allow(dead_code)]
     sig        : String,
     name       : String,
     prog_name  : String,
@@ -319,7 +320,7 @@ pub struct XmData {
 }
 
 impl ModuleData for XmData {
-    fn as_any(&self) -> &Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 

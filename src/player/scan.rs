@@ -1,8 +1,8 @@
-use player::State;
+use crate::player::State;
 
 pub trait SaveRestore {
     unsafe fn save(&self) -> Vec<u8>;
-    unsafe fn restore(&mut self, &Vec<u8>);
+    unsafe fn restore(&mut self, _: &Vec<u8>);
 }
 
 #[derive(Default, Clone)]

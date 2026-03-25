@@ -1,8 +1,8 @@
 mod st2play;
 
-use module::Module;
-use player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
-use ::*;
+use crate::module::Module;
+use crate::player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
+use crate::*;
 
 pub struct St2;
 
@@ -17,7 +17,7 @@ impl PlayerListEntry for St2 {
        }
    }
 
-   fn player(&self, module: &Module, options: Options) -> Box<FormatPlayer> {
+   fn player(&self, module: &Module, options: Options) -> Box<dyn FormatPlayer> {
        Box::new(self::st2play::St2Play::new(module, options))
    }
 

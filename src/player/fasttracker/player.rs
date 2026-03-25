@@ -1,8 +1,8 @@
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::mk::ModData;
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::mk::ModData;
+use crate::mixer::Mixer;
 
 /// FT101 Replayer
 ///
@@ -823,7 +823,7 @@ impl ChannelData {
 
 
 impl FormatPlayer for FtPlayer {
-    fn start(&mut self, data: &mut PlayerData, _mdata: &ModuleData, mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, _mdata: &dyn ModuleData, mixer: &mut Mixer) {
 
         data.speed = 6;
         data.tempo = 125.0;
@@ -852,7 +852,7 @@ impl FormatPlayer for FtPlayer {
 
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<ModData>().unwrap();
 

@@ -15,7 +15,7 @@ pub struct Module {
     pub creator    : String,            // tracker name
     pub channels   : usize,             // number of mixer channels
     pub player     : &'static str,      // primary player for this format
-    pub data       : Box<ModuleData>    //
+    pub data       : Box<dyn ModuleData>    //
 }
 
 impl Module {
@@ -55,11 +55,11 @@ impl Module {
 }
 
 pub trait ModuleData: Send + Sync {
-    fn as_any(&self) -> &Any;
+    fn as_any(&self) -> &dyn Any;
     fn title(&self) -> &str;            // module title
     fn patterns(&self) -> usize;        // number of patterns
     fn len(&self) -> usize;             // module length
-    fn pattern_in_position(&self, usize) -> Option<usize>;
+    fn pattern_in_position(&self, _: usize) -> Option<usize>;
     fn instruments(&self) -> Vec<String>;
     fn rows(&self, pat: usize) -> usize;  // number of rows in pattern
     fn pattern_data(&self, pat: usize, num: usize, buffer: &mut [u8]) -> usize;

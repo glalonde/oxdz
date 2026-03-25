@@ -1,11 +1,11 @@
 use std::cmp;
-use format::{ProbeInfo, Format, Loader};
-use format::st::StData;
-use format::mk::{ModPatterns, ModInstrument};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::BinaryRead;
-use ::*;
+use crate::format::{ProbeInfo, Format, Loader};
+use crate::format::st::StData;
+use crate::format::mk::{ModPatterns, ModInstrument};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::BinaryRead;
+use crate::*;
 
 
 /// Soundtracker 15-instrument module loader

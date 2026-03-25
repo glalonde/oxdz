@@ -1,8 +1,8 @@
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::st::StData;
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::st::StData;
+use crate::mixer::Mixer;
 
 /// D.O.C SoundTracker V2.0 replayer
 ///
@@ -201,7 +201,7 @@ impl StPlayer {
         let ch = &mut self.mt_audtemp[chn];
         self.mt_status = !self.mt_status;
         self.mt_partnrplay = ch.n_3_cmdlo;
-        self.mt_partnrplay.wrapping_sub(1);
+        self.mt_partnrplay = self.mt_partnrplay.wrapping_sub(1);
     }
 
     fn mt_setvol(&mut self, chn: usize, mixer: &mut Mixer) {
@@ -261,7 +261,7 @@ lazy_static! {
 
 
 impl FormatPlayer for StPlayer {
-    fn start(&mut self, data: &mut PlayerData, mdata: &ModuleData, mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StData>().unwrap();
 
@@ -291,7 +291,7 @@ impl FormatPlayer for StPlayer {
         mixer.enable_paula(true);
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StData>().unwrap();
 

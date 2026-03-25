@@ -210,16 +210,7 @@ impl fmt::Display for Error {
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Format(_)   => "Unsupported module format",
-            Error::Player(_)   => "Can't play module",
-            Error::Load(_)     => "Can't load module data",
-            Error::Io(ref err) => err.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             Error::Io(ref err) => Some(err),
             _                  => None,

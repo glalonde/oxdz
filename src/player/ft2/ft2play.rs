@@ -1,10 +1,10 @@
 use std::cmp;
 use std::f64::consts::PI;
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::xm::{XmData, TonTyp};
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::xm::{XmData, TonTyp};
+use crate::mixer::Mixer;
 
 const IS_VOL     : u8 = 1;
 const IS_PERIOD  : u8 = 2;
@@ -1909,7 +1909,7 @@ impl Ft2Play {
             let mut tremor_sign = ch.tremor_pos & 0x80;
             let mut tremor_data = ch.tremor_pos & 0x7F;
 
-            tremor_data.wrapping_sub(1);
+            tremor_data = tremor_data.wrapping_sub(1);
             if tremor_data & 0x80 != 0 {
                 if tremor_sign == 0x80 {
                     tremor_sign = 0x00;
@@ -1996,7 +1996,7 @@ impl Ft2Play {
 
     fn voice_set_source(&mut self, chn: usize, smp_num: u32, sample_length: u32, mut sample_loop_begin: u32,
         mut sample_loop_length: u32, mut sample_loop_end: u32, mut loop_flag: u8, sixteenbit: bool, _stereo: bool,
-        mut position: i32, mixer: &mut Mixer)
+        position: i32, mixer: &mut Mixer)
     {
 
         if smp_num == 0 || sample_length < 1 {
@@ -2004,8 +2004,7 @@ impl Ft2Play {
         }
 
         if position >= sample_length as i32 {
-            position = 0;
-            // reset voice?
+            let _ = position; // reset voice? position would be 0 but we return immediately
             return;
         } else {
             mixer.set_sample(chn, smp_num as usize);
@@ -2181,7 +2180,7 @@ impl Ft2Play {
 
 
 impl FormatPlayer for Ft2Play {
-    fn start(&mut self, data: &mut PlayerData, mdata: &ModuleData, _mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, _mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<XmData>().unwrap();
 
@@ -2244,7 +2243,7 @@ impl FormatPlayer for Ft2Play {
         data.initial_tempo = data.tempo;
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<XmData>().unwrap();
 

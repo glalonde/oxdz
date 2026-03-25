@@ -1,7 +1,7 @@
-use module::sample::{Sample, SampleType};
-use mixer::interpolator::Interpolator;
-use mixer::paula::Paula;
-use ::*;
+use crate::module::sample::{Sample, SampleType};
+use crate::mixer::interpolator::Interpolator;
+use crate::mixer::paula::Paula;
+use crate::*;
 
 mod interpolator;
 mod paula;
@@ -42,7 +42,7 @@ pub struct Mixer<'a> {
     framesize : usize,
     buf32     : Vec<i32>,
     buffer    : Vec<i16>,
-    pub interp: &'a interpolator::Interpolator,
+    pub interp: &'a dyn interpolator::Interpolator,
     sample    : Vec<Sample>,
 }
 
@@ -425,6 +425,7 @@ struct Voice {
     note      : usize,
     pan       : isize,
     vol       : usize,
+    #[allow(dead_code)]
     ins       : usize,
     smp       : usize,
     end       : u32,
@@ -494,7 +495,7 @@ struct MixerData {
 }
 
 impl MixerData {
-    fn mix<T>(&mut self, interp: &Interpolator, data: &[T], buf32: &mut [i32], ibuf: &mut [i32])
+    fn mix<T>(&mut self, interp: &dyn Interpolator, data: &[T], buf32: &mut [i32], ibuf: &mut [i32])
     where Sampler: SamplerOperations<T>
     {
         let mut pos = self.pos as usize;
@@ -574,7 +575,7 @@ impl MixerData {
 struct Sampler;
 
 trait SamplerOperations<T> {
-    fn get(&T) -> i32;
+    fn get(_: &T) -> i32;
 }
 
 impl SamplerOperations<i16> for Sampler {

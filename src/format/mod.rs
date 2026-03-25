@@ -1,5 +1,5 @@
-use module::Module;
-use ::*;
+use crate::module::Module;
+use crate::*;
 
 pub mod mk;
 pub mod st;
@@ -37,11 +37,11 @@ pub struct FormatInfo {
 
 pub trait Loader: Sync {
     fn name(&self) -> &'static str;
-    fn probe(&self, &[u8], &str) -> Result<ProbeInfo, Error>;
-    fn load(self: Box<Self>, &[u8], ProbeInfo) -> Result<Module, Error>;
+    fn probe(&self, _: &[u8], _: &str) -> Result<ProbeInfo, Error>;
+    fn load(self: Box<Self>, _: &[u8], _: ProbeInfo) -> Result<Module, Error>;
 }
 
-fn loader_list() -> Vec<Box<Loader>> {
+fn loader_list() -> Vec<Box<dyn Loader>> {
     vec![
         Box::new(xm::XmLoader),
         Box::new(s3m::S3mLoader),

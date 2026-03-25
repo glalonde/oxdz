@@ -1,4 +1,4 @@
-use util::NOTES;
+use crate::util::NOTES;
 
 pub const HAS_NOTE: u8 = 0x01;
 pub const HAS_INS : u8 = 0x02;

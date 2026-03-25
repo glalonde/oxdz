@@ -1,8 +1,8 @@
 mod player;
 
-use module::Module;
-use player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
-use ::*;
+use crate::module::Module;
+use crate::player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
+use crate::*;
 
 pub struct Ft101;
 
@@ -17,7 +17,7 @@ impl PlayerListEntry for Ft101 {
        }
    }
 
-   fn player(&self, module: &Module, options: Options) -> Box<FormatPlayer> {
+   fn player(&self, module: &Module, options: Options) -> Box<dyn FormatPlayer> {
        Box::new(self::player::FtPlayer::new(module, options))
    }
 

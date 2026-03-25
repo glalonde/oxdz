@@ -1,9 +1,9 @@
 mod st3play;
 mod import;
 
-use module::Module;
-use player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
-use ::*;
+use crate::module::Module;
+use crate::player::{Options, PlayerListEntry, PlayerInfo, FormatPlayer};
+use crate::*;
 
 pub struct St3;
 
@@ -18,7 +18,7 @@ impl PlayerListEntry for St3 {
         }
     }
 
-    fn player(&self, module: &Module, options: Options) -> Box<FormatPlayer> {
+    fn player(&self, module: &Module, options: Options) -> Box<dyn FormatPlayer> {
         Box::new(self::st3play::St3Play::new(module, options))
     }
 

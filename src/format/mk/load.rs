@@ -1,11 +1,11 @@
 use std::cmp;
-use format::{ProbeInfo, Format, Loader};
-use format::mk::{ModData, ModPatterns, ModInstrument};
-use format::mk::fingerprint::{Fingerprint, TrackerID};
-use module::{Module, Sample};
-use module::sample::SampleType;
-use util::BinaryRead;
-use ::*;
+use crate::format::{ProbeInfo, Format, Loader};
+use crate::format::mk::{ModData, ModPatterns, ModInstrument};
+use crate::format::mk::fingerprint::{Fingerprint, TrackerID};
+use crate::module::{Module, Sample};
+use crate::module::sample::SampleType;
+use crate::util::BinaryRead;
+use crate::*;
 
 /// Amiga tracker module loader
 pub struct ModLoader;

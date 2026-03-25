@@ -1,8 +1,8 @@
-use module::{Module, ModuleData};
-use player::{Options, PlayerData, FormatPlayer, State};
-use player::scan::SaveRestore;
-use format::st::StData;
-use mixer::Mixer;
+use crate::module::{Module, ModuleData};
+use crate::player::{Options, PlayerData, FormatPlayer, State};
+use crate::player::scan::SaveRestore;
+use crate::format::st::StData;
+use crate::mixer::Mixer;
 
 /// Ultimate Soundtracker V27 replayer
 ///
@@ -241,7 +241,7 @@ lazy_static! {
 }
 
 impl FormatPlayer for USTPlayer {
-    fn start(&mut self, data: &mut PlayerData, mdata: &ModuleData, mixer: &mut Mixer) {
+    fn start(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StData>().unwrap();
 
@@ -271,7 +271,7 @@ impl FormatPlayer for USTPlayer {
         mixer.enable_paula(true);
     }
 
-    fn play(&mut self, data: &mut PlayerData, mdata: &ModuleData, mut mixer: &mut Mixer) {
+    fn play(&mut self, data: &mut PlayerData, mdata: &dyn ModuleData, mut mixer: &mut Mixer) {
 
         let module = mdata.as_any().downcast_ref::<StData>().unwrap();
 

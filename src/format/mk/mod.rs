@@ -3,9 +3,9 @@ pub mod load;
 pub use self::load::*;
 
 use std::any::Any;
-use module::{event, ModuleData, Sample};
-use util::BinaryRead;
-use ::*;
+use crate::module::{event, ModuleData, Sample};
+use crate::util::BinaryRead;
+use crate::*;
 
 mod fingerprint;
 
@@ -22,7 +22,7 @@ pub struct ModData {
 }
 
 impl ModuleData for ModData {
-    fn as_any(&self) -> &Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 

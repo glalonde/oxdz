@@ -5,7 +5,7 @@ pub const MINIMUM_INTERVAL: usize = 16;
 
 const BLEP_SCALE: u32   = 17;
 const BLEP_SIZE : usize = 2048;
-const MAX_BLEPS : usize = (BLEP_SIZE / MINIMUM_INTERVAL);
+const MAX_BLEPS : usize = BLEP_SIZE / MINIMUM_INTERVAL;
 
 // the structure that holds data of bleps
 #[derive(Copy,Clone,Default)]
