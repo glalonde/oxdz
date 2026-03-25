@@ -2251,7 +2251,7 @@ impl FormatPlayer for Ft2Play {
         self.main_player(&module);
         self.update_channel_vol_pan_frq(&module, &mut mixer);
 
-        data.frame = ((self.song.tempo - self.song.timer + 1) % self.song.tempo) as usize;
+        data.frame = if self.song.tempo > 0 { ((self.song.tempo - self.song.timer + 1) % self.song.tempo) as usize } else { 0 };
         data.row = self.song.patt_pos as usize;
         data.pos = self.song.song_pos as usize;
         data.speed = self.song.tempo as usize;
