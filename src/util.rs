@@ -42,16 +42,6 @@ macro_rules! magic4 {
 }
 
 
-pub trait MemOpExt<T> {
-    fn fill(&mut self, u8, usize);
-}
-
-impl<'a, T> MemOpExt<T> for [T] {
-    fn fill(&mut self, val: u8, amt: usize) {
-        unsafe { ptr::write_bytes(self.as_mut_ptr(), val, amt * std::mem::size_of::<T>() - 1); }
-    }
-}
-
 
 pub trait BinaryRead {
     fn read_string(&self, ofs: usize, size: usize) -> Result<String, Error>;

@@ -17,7 +17,6 @@ use std::collections::hash_map::Entry;
 use std::default::Default;
 use module::{Module, ModuleData};
 use player::scan::{ScanData, OrdData};
-use util::MemOpExt;
 use ::*;
 
 
@@ -332,7 +331,7 @@ impl<'a> Player<'a> {
                     }
 
                     // Clear rest of the buffer
-                    out_buffer[filled..].fill(0, size - filled);
+                    out_buffer[filled..].fill(0);
                 }
 
                 self.consumed = 0;

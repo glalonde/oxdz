@@ -1,7 +1,6 @@
 use module::sample::{Sample, SampleType};
 use mixer::interpolator::Interpolator;
 use mixer::paula::Paula;
-use util::MemOpExt;
 use ::*;
 
 mod interpolator;
@@ -283,7 +282,7 @@ impl<'a> Mixer<'a> {
             vol_l  : 0,
         };
 
-        self.buf32[..].fill(0, self.framesize);
+        self.buf32[..self.framesize].fill(0);
 
         for v in &mut self.voices {
             if v.mute || v.period < 1.0 || !v.active {

@@ -5,7 +5,6 @@ pub use self::sample::Sample;
 
 use std::any::Any;
 use std::marker::{Sync, Send};
-use util::MemOpExt;
 
 
 // Module
@@ -46,7 +45,7 @@ impl Module {
 
     pub fn pattern_data(&self, pat: usize, mut buffer: &mut [u8]) -> usize {
         let length = buffer.len();
-        buffer[..].fill(0, length);
+        buffer.fill(0);
         self.data.pattern_data(pat, length / 6, &mut buffer)
     }
 
