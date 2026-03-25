@@ -538,7 +538,7 @@ impl MixerData {
 
             // input is sampled at a higher rate than output
             for _ in 0..num_in-1 {
-                paula.input_sample(*&data[pos] as i16);
+                paula.input_sample(data[pos.min(data.len() - 1)] as i16);
                 paula.do_clock(paula::MINIMUM_INTERVAL as i16);
 
                 frac += ministep;
@@ -546,7 +546,7 @@ impl MixerData {
                 frac &= SMIX_MASK;
             }
 
-            paula.input_sample(*&data[pos] as i16);
+            paula.input_sample(data[pos.min(data.len() - 1)] as i16);
 
             paula.remainder -= (num_in * paula::MINIMUM_INTERVAL) as f64;
             let remainder = paula.remainder as i16;
